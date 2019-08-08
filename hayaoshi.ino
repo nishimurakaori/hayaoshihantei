@@ -26,7 +26,7 @@ Serial.begin(9600);
   pinMode(BATSU_INPUT, INPUT_PULLUP);
   pinMode(RESET_INPUT, INPUT_PULLUP);
   
-  //pinMode(RESET_OUTPUT, OUTPUT);
+  pinMode(RESET_OUTPUT, OUTPUT);
   pinMode(LED_BUILTIN, OUTPUT);
   ring_buffer_index[MARU] = 0;
   ring_buffer_index[BATSU] = 0;
@@ -38,10 +38,6 @@ void PushBuffer(int button, bool v)
   ring_buffer[button][ring_buffer_index[button]] = v;
   ring_buffer_index[button] = (ring_buffer_index[button] + 1) % MAX_RING_BUFFER;
 
-  for(int i = 0; i < MAX_RING_BUFFER; i++){
-    //Serial.print(ring_buffer[BATSU][i]);
-  }
-  //Serial.println();
 }
 
 bool IsPush(int button)
@@ -60,7 +56,6 @@ bool IsPush(int button)
 void loop() {
 
   // put your main code here, to run repeatedly:
-//  const bool val = digitalRead(2) == HIGH;
   const bool val_maru = digitalRead(MARU_INPUT) == LOW;
   const bool val_batsu = digitalRead(BATSU_INPUT) == LOW;
   const bool val_reset = digitalRead(RESET_INPUT) == LOW;
@@ -70,7 +65,6 @@ void loop() {
   PushBuffer(MARU, val_maru);
   PushBuffer(BATSU, val_batsu);
   PushBuffer(RESET, val_reset);
- // const int is_push = IsPush() ? HIGH : LOW;
   int is_push[3];
   is_push[MARU] = IsPush(MARU) ? HIGH : LOW;
   is_push[BATSU] = IsPush(BATSU) ? HIGH : LOW;
@@ -79,7 +73,7 @@ void loop() {
   //Serial.println(is_push[BATSU]);
   
   if(is_push[MARU]){
-    digitalWrite(RESET_OUTPUT, LOW);
+    digitalWrite(RESET_OUTPUT, HIGH);
     digitalWrite(LED_BUILTIN, LOW);
 
     tone(SPEAKER,784,BEATTIME) ; // ソ
@@ -97,17 +91,17 @@ void loop() {
   }
   
   else if (is_push[BATSU]){
-    digitalWrite(RESET_OUTPUT, LOW);
+    digitalWrite(RESET_OUTPUT, HIGH);
     tone(SPEAKER,277,200) ; // ド＃
     delay(200) ;
 
   }
   else if (is_push[RESET]){
-    digitalWrite(RESET_OUTPUT, LOW);
+    digitalWrite(RESET_OUTPUT, HIGH);
   }
 
   else {
-    digitalWrite(RESET_OUTPUT, HIGH);
+    digitalWrite(RESET_OUTPUT, LOW);
     digitalWrite(LED_BUILTIN, HIGH);
   }
   delay(1);
